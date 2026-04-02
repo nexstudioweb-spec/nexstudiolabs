@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEX STUDIO</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060608;
+  --surface: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.08);
+  --text: #e8e8f0;
+  --muted: #888899;
+  --accent: #c8f0ff;
+  --wa: #25d366;
+  --ig-start: #f09433;
+  --ig-mid: #e6683c;
+  --ig-end: #bc1888;
+  --meet: #1a73e8;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── STARS BACKGROUND ── */
+.stars {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.stars canvas { width:100%; height:100%; }
+
+/* ── LOADER ── */
+.loader {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+.loader.hide { opacity: 0; visibility: hidden; }
+.loader-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: 12px;
+  color: var(--text);
+  animation: loaderPulse 1.5s ease infinite;
+}
+.loader-bar {
+  margin-top: 20px;
+  width: 200px;
+  height: 2px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.loader-bar::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  animation: loaderLine 2s ease forwards;
+}
+@keyframes loaderPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+@keyframes loaderLine { to{width:100%} }
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(90%, 900px);
+  padding: 14px 28px;
+  background: rgba(10,10,18,0.7);
+  border: 1px solid var(--border);
+  border-radius: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(30px);
+  z-index: 1000;
+}
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 3px;
+  color: var(--text);
+}
+.nav-links a {
+  color: var(--muted);
+  margin: 0 14px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+  background: var(--text);
+  color: #000;
+  padding: 10px 22px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+}
+.nav-cta:hover { background: var(--accent); box-shadow: 0 0 25px rgba(200,240,255,0.3); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8%;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-content { max-width: 520px; }
+
+.hero-eyebrow {
+  font-size: 0.8rem;
+  letter-spacing: 4px;
+  color: var(--muted);
+  margin-bottom: 24px;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  margin-bottom: 28px;
+}
+
+.glow-text {
+  background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, #fff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+@keyframes shimmer { to{background-position: 200% center} }
+
+.hero-sub {
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 1rem;
+  margin-bottom: 36px;
+}
+
+.hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+
+.btn-primary {
+  background: var(--text);
+  color: #000;
+  padding: 14px 28px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+.btn-primary:hover { background: var(--accent); transform: translateY(-2px); }
+
+.btn-secondary {
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 14px 28px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+.btn-secondary:hover { border-color: rgba(255,255,255,0.3); color: var(--text); }
+
+/* ── CINEMATIC ROCKET ── */
+.rocket-scene {
+  width: 380px;
+  height: 500px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Orbit ring */
+.orbit-ring {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border: 1px solid rgba(200,240,255,0.08);
+  border-radius: 50%;
+  animation: orbitSpin 20s linear infinite;
+}
+.orbit-ring::before {
+  content: '';
+  position: absolute;
+  width: 8px; height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  top: -4px; left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 12px var(--accent);
+}
+@keyframes orbitSpin { to{transform: rotate(360deg)} }
+
+/* Glow base */
+.rocket-glow {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(100,180,255,0.15), transparent 70%);
+  filter: blur(30px);
+  animation: glowPulse 3s ease-in-out infinite;
+}
+@keyframes glowPulse { 0%,100%{transform:scale(1);opacity:0.7} 50%{transform:scale(1.3);opacity:1} }
+
+/* Rocket SVG wrapper */
+.rocket-wrap {
+  position: relative;
+  z-index: 2;
+  animation: rocketFloat 4s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+@keyframes rocketFloat {
+  0%,100%{transform: translateY(0) rotate(-2deg)}
+  50%{transform: translateY(-20px) rotate(2deg)}
+}
+
+/* Rocket SVG */
+.rocket-svg {
+  width: 100px;
+  filter: drop-shadow(0 0 20px rgba(150,220,255,0.5));
+}
+
+/* Engine flame */
+.flame-wrap {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.flame-core {
+  width: 18px;
+  height: 45px;
+  background: linear-gradient(to bottom, #fff, #c8f0ff, #4aa8ff, transparent);
+  border-radius: 50% 50% 30% 30%;
+  filter: blur(2px);
+  animation: flameFlicker 0.1s infinite alternate;
+}
+.flame-outer {
+  position: absolute;
+  width: 30px;
+  height: 60px;
+  background: linear-gradient(to bottom, rgba(100,180,255,0.4), transparent);
+  border-radius: 50% 50% 30% 30%;
+  filter: blur(6px);
+  animation: flameFlicker 0.15s infinite alternate-reverse;
+}
+@keyframes flameFlicker {
+  from{transform: scaleX(1) scaleY(1);}
+  to{transform: scaleX(1.1) scaleY(1.05);}
+}
+
+/* Exhaust particles */
+.exhaust {
+  position: absolute;
+  bottom: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 80px;
+}
+.particle {
+  position: absolute;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: rgba(150,220,255,0.6);
+  animation: particleFly var(--dur, 1s) var(--delay, 0s) infinite ease-out;
+}
+@keyframes particleFly {
+  0%{transform: translate(var(--sx,0px), 0) scale(1); opacity:0.8;}
+  100%{transform: translate(var(--ex,0px), 80px) scale(0); opacity:0;}
+}
+
+/* Speed lines */
+.speed-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.speed-line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200,240,255,0.15), transparent);
+  animation: speedLine var(--dur) var(--delay) infinite linear;
+}
+@keyframes speedLine {
+  0%{transform: translateX(-100%); opacity:0}
+  50%{opacity:1}
+  100%{transform: translateX(100vw); opacity:0}
+}
+
+/* ── SECTIONS ── */
+section {
+  padding: 100px 8%;
+  position: relative;
+  z-index: 1;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  letter-spacing: 4px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  margin-bottom: 50px;
+}
+
+/* ── SERVICES ── */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+.service-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 32px;
+  transition: all 0.4s;
+  position: relative;
+  overflow: hidden;
+}
+.service-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(200,240,255,0.06), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.service-card:hover { transform: translateY(-8px); border-color: rgba(200,240,255,0.2); }
+.service-card:hover::before { opacity: 1; }
+.service-icon { font-size: 2rem; margin-bottom: 16px; }
+.service-card h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; margin-bottom: 10px; }
+.service-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+
+/* ── CONNECT (WhatsApp / Instagram / Meet) ── */
+.connect-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 60px;
+}
+
+.connect-card {
+  border-radius: 24px;
+  padding: 36px 32px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s;
+  border: 1px solid transparent;
+}
+
+/* WhatsApp */
+.connect-card.wa {
+  background: linear-gradient(135deg, #0a1f14 0%, #0d2b1a 100%);
+  border-color: rgba(37,211,102,0.2);
+}
+.connect-card.wa::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(37,211,102,0.12), transparent 60%);
+}
+.connect-card.wa:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: rgba(37,211,102,0.5);
+  box-shadow: 0 20px 60px rgba(37,211,102,0.15);
+}
+
+/* Instagram */
+.connect-card.ig {
+  background: linear-gradient(135deg, #1a0a0f 0%, #1f0d1a 100%);
+  border-color: rgba(225,48,108,0.2);
+}
+.connect-card.ig::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(225,48,108,0.1), transparent 60%);
+}
+.connect-card.ig:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: rgba(225,48,108,0.5);
+  box-shadow: 0 20px 60px rgba(225,48,108,0.15);
+}
+
+/* Google Meet */
+.connect-card.meet {
+  background: linear-gradient(135deg, #0a0f1f 0%, #0d1530 100%);
+  border-color: rgba(26,115,232,0.2);
+}
+.connect-card.meet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(26,115,232,0.1), transparent 60%);
+}
+.connect-card.meet:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: rgba(26,115,232,0.5);
+  box-shadow: 0 20px 60px rgba(26,115,232,0.15);
+}
+
+.connect-icon-wrap {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.wa .connect-icon-wrap { background: linear-gradient(135deg, #128c4e, #25d366); box-shadow: 0 8px 25px rgba(37,211,102,0.3); }
+.ig .connect-icon-wrap { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); box-shadow: 0 8px 25px rgba(225,48,108,0.3); }
+.meet .connect-icon-wrap { background: linear-gradient(135deg, #1a73e8, #34a853); box-shadow: 0 8px 25px rgba(26,115,232,0.3); }
+
+.connect-icon-wrap svg { width: 28px; height: 28px; fill: #fff; }
+
+.connect-info { position: relative; z-index: 1; }
+.connect-info h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.connect-info p { font-size: 0.85rem; color: var(--muted); }
+
+.connect-arrow {
+  margin-left: auto;
+  position: relative;
+  z-index: 1;
+  color: var(--muted);
+  font-size: 1.3rem;
+  transition: transform 0.3s;
+}
+.connect-card:hover .connect-arrow { transform: translateX(5px); }
+
+/* Shine sweep */
+.connect-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+  transition: left 0.6s;
+}
+.connect-card:hover::after { left: 150%; }
+
+/* Pulse animation on icon */
+.connect-card:hover .connect-icon-wrap {
+  animation: iconPulse 0.6s ease;
+}
+@keyframes iconPulse {
+  0%{transform:scale(1)}
+  40%{transform:scale(1.15)}
+  100%{transform:scale(1)}
+}
+
+/* ── BOOKING FORM ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-grid .full { grid-column: 1/-1; }
+
+input, select, textarea {
+  width: 100%;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.3s;
+  outline: none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: rgba(200,240,255,0.3);
+}
+input::placeholder, textarea::placeholder { color: var(--muted); }
+select option { background: #1a1a2e; }
+textarea { resize: none; min-height: 120px; }
+
+.submit-btn {
+  grid-column: 1/-1;
+  background: var(--text);
+  color: #000;
+  padding: 16px 32px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  letter-spacing: 1px;
+}
+.submit-btn:hover {
+  background: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(200,240,255,0.2);
+}
+
+/* ── ARCADE ── */
+#arcade { text-align: center; }
+#game {
+  background: rgba(0,0,0,0.6);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-top: 30px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ── FOOTER ── */
+footer {
+  text-align: center;
+  padding: 40px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── NEX AI BUTTON ── */
+.ai-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border: 1px solid rgba(200,240,255,0.2);
+  color: var(--accent);
+  padding: 12px 22px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  transition: all 0.3s;
+  z-index: 999;
+  box-shadow: 0 0 20px rgba(200,240,255,0.1);
+}
+.ai-btn:hover {
+  box-shadow: 0 0 30px rgba(200,240,255,0.25);
+  transform: translateY(-2px);
+}
+
+/* ── REVEAL ── */
+.reveal { opacity:0; transform:translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+.reveal.active { opacity:1; transform:translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .hero { flex-direction:column; padding-top: 120px; text-align:center; gap:40px; }
+  .hero-btns { justify-content:center; }
+  .rocket-scene { width:280px; height:320px; }
+  .nav-links { display:none; }
+  .form-grid { grid-template-columns:1fr; }
+  .form-grid .full { grid-column:1; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-text">NEX STUDIO</div>
+  <div class="loader-bar"></div>
+</div>
+
+<!-- STARS -->
+<div class="stars"><canvas id="stars"></canvas></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">✦ NEX</div>
+  <div class="nav-links">
+    <a href="#services">Services</a>
+    <a href="#connect">Connect</a>
+    <a href="#arcade">Arcade</a>
+  </div>
+  <a href="https://meet.google.com/pct-qeae-vbz" class="nav-cta" target="_blank">BOOK A MEET</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <p class="hero-eyebrow">✦ Digital Studio · Bengaluru</p>
+    <h1>
+      We Craft.<br>
+      We Create.<br>
+      <span class="glow-text">We NEX.</span>
+    </h1>
+    <p class="hero-sub">Professional websites for small businesses, shops & freelancers. Fast delivery, mobile-friendly, no hidden charges.</p>
+    <div class="hero-btns">
+      <a href="#connect" class="btn-primary">Start a Project</a>
+      <a href="#services" class="btn-secondary">Our Services</a>
+    </div>
+  </div>
+
+  <!-- CINEMATIC ROCKET -->
+  <div class="rocket-scene">
+    <div class="speed-lines" id="speedLines"></div>
+    <div class="orbit-ring"></div>
+    <div class="rocket-glow"></div>
+    <div class="rocket-wrap" id="rocketWrap">
+      <svg class="rocket-svg" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Body -->
+        <defs>
+          <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#c8e8ff"/>
+            <stop offset="50%" style="stop-color:#ffffff"/>
+            <stop offset="100%" style="stop-color:#8ab8d8"/>
+          </linearGradient>
+          <linearGradient id="noseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#a0c8e8"/>
+            <stop offset="100%" style="stop-color:#e8f4ff"/>
+          </linearGradient>
+          <linearGradient id="finGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#6890aa"/>
+            <stop offset="100%" style="stop-color:#304050"/>
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- Left fin -->
+        <polygon points="20,140 5,175 30,155" fill="url(#finGrad)" opacity="0.9"/>
+        <!-- Right fin -->
+        <polygon points="80,140 95,175 70,155" fill="url(#finGrad)" opacity="0.9"/>
+
+        <!-- Main body -->
+        <rect x="28" y="70" width="44" height="100" rx="8" fill="url(#bodyGrad)"/>
+
+        <!-- Nose cone -->
+        <path d="M28,70 Q50,10 72,70 Z" fill="url(#noseGrad)"/>
+
+        <!-- Window -->
+        <circle cx="50" cy="95" r="14" fill="#0a0e1a" stroke="#c8f0ff" stroke-width="2.5" filter="url(#glow)"/>
+        <circle cx="50" cy="95" r="10" fill="#0d1530"/>
+        <circle cx="45" cy="90" r="3" fill="rgba(200,240,255,0.5)"/>
+
+        <!-- Stripe -->
+        <rect x="28" y="118" width="44" height="8" rx="2" fill="rgba(100,180,255,0.3)"/>
+
+        <!-- NEX text -->
+        <text x="50" y="140" text-anchor="middle" font-family="sans-serif" font-size="9" font-weight="bold" fill="rgba(255,255,255,0.6)">NEX</text>
+
+        <!-- Bottom nozzle -->
+        <rect x="38" y="165" width="24" height="10" rx="4" fill="#3a5060"/>
+      </svg>
+
+      <!-- Flame -->
+      <div class="flame-wrap">
+        <div class="flame-outer"></div>
+        <div class="flame-core"></div>
+        <div class="exhaust" id="exhaust"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" class="reveal">
+  <p class="section-label">What we do</p>
+  <h2 class="section-title">Our Expertise</h2>
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon">⚡</div>
+      <h3>Modern Web Design</h3>
+      <p>Clean, fast, mobile-first websites that look stunning on every device. Starting at ₹2,499.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🎨</div>
+      <h3>UI/UX Design</h3>
+      <p>Intuitive interfaces that turn visitors into customers. Every pixel with purpose.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🤖</div>
+      <h3>AI Integration</h3>
+      <p>Supercharge your website with smart AI features — chatbots, automation & more.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🚀</div>
+      <h3>Full Setup</h3>
+      <p>Domain, hosting, deployment & 1 month support. Everything handled for you.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONNECT -->
+<section id="connect" class="reveal">
+  <p class="section-label">Get in touch</p>
+  <h2 class="section-title">Let's Connect.</h2>
+
+  <div class="connect-grid">
+
+    <!-- WhatsApp -->
+    <a href="https://wa.me/qr/YKD6TEQVK4MYN1" target="_blank" class="connect-card wa">
+      <div class="connect-icon-wrap">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.533 5.857L.054 23.25a.75.75 0 0 0 .916.916l5.356-1.48A11.942 11.942 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.694-.504-5.24-1.387l-.374-.214-3.88 1.072 1.04-3.786-.234-.387A9.965 9.965 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+      </div>
+      <div class="connect-info">
+        <h3>WhatsApp</h3>
+        <p>Chat with us instantly</p>
+      </div>
+      <span class="connect-arrow">→</span>
+    </a>
+
+    <!-- Instagram -->
+    <a href="https://www.instagram.com/nexstudioweb?igsh=MWVyZmxhNm1zOG42YQ==" target="_blank" class="connect-card ig">
+      <div class="connect-icon-wrap">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+      </div>
+      <div class="connect-info">
+        <h3>Instagram</h3>
+        <p>See our latest work</p>
+      </div>
+      <span class="connect-arrow">→</span>
+    </a>
+
+    <!-- Google Meet -->
+    <a href="https://meet.google.com/pct-qeae-vbz" target="_blank" class="connect-card meet">
+      <div class="connect-icon-wrap">
+        <svg viewBox="0 0 24 24"><path d="M15.75 8.25v7.5L20.03 12l-4.28-3.75zm-12 9.75h9a1.5 1.5 0 0 0 1.5-1.5V7.5A1.5 1.5 0 0 0 12.75 6h-9A1.5 1.5 0 0 0 2.25 7.5v9a1.5 1.5 0 0 0 1.5 1.5z"/></svg>
+      </div>
+      <div class="connect-info">
+        <h3>Google Meet</h3>
+        <p>Book a discovery call</p>
+      </div>
+      <span class="connect-arrow">→</span>
+    </a>
+
+  </div>
+
+  <!-- Booking Form -->
+  <h2 class="section-title" style="margin-top:60px;">Book a Discovery Call</h2>
+  <div class="form-grid">
+    <input id="name" placeholder="Your Name">
+    <input id="email" placeholder="Email Address">
+    <input type="date" id="date">
+    <input type="time" id="time">
+    <select id="service">
+      <option value="">Choose a Service</option>
+      <option>Web Design — ₹2,499</option>
+      <option>Standard Website — ₹4,499</option>
+      <option>Premium Package — ₹7,000</option>
+      <option>UI/UX Design</option>
+      <option>AI Integration</option>
+    </select>
+    <div></div>
+    <textarea class="full" id="details" placeholder="Tell us about your project..."></textarea>
+    <button class="submit-btn full" onclick="sendWhatsApp()">Send via WhatsApp →</button>
+  </div>
+</section>
+
+<!-- ARCADE -->
+<section id="arcade" class="reveal">
+  <p class="section-label">Take a break</p>
+  <h2 class="section-title">Arcade 🎮</h2>
+  <p style="color:var(--muted);margin-bottom:10px;">Use arrow keys to play Snake</p>
+  <canvas id="game" width="320" height="320"></canvas>
+</section>
+
+<footer>© 2025 NEX STUDIO · Bengaluru · Built with ✦</footer>
+
+<button class="ai-btn" onclick="openAI()">✦ NEX AI</button>
+
+<script>
+// ── LOADER ──
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hide');
+  }, 2500);
+});
+
+// ── STARS ──
+const starCanvas = document.getElementById('stars');
+const sc = starCanvas.getContext('2d');
+function resizeStars() {
+  starCanvas.width = window.innerWidth;
+  starCanvas.height = window.innerHeight;
+}
+resizeStars();
+window.addEventListener('resize', resizeStars);
+
+const stars = Array.from({length: 200}, () => ({
+  x: Math.random() * window.innerWidth,
+  y: Math.random() * window.innerHeight,
+  r: Math.random() * 1.5 + 0.2,
+  a: Math.random(),
+  speed: Math.random() * 0.005 + 0.002
+}));
+
+function drawStars() {
+  sc.clearRect(0, 0, starCanvas.width, starCanvas.height);
+  stars.forEach(s => {
+    s.a += s.speed;
+    sc.beginPath();
+    sc.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    sc.fillStyle = `rgba(200,230,255,${0.3 + 0.7 * Math.abs(Math.sin(s.a))})`;
+    sc.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+drawStars();
+
+// ── SPEED LINES ──
+const sl = document.getElementById('speedLines');
+for(let i = 0; i < 8; i++) {
+  const line = document.createElement('div');
+  line.className = 'speed-line';
+  line.style.cssText = `
+    top: ${Math.random()*100}%;
+    width: ${100+Math.random()*200}px;
+    --dur: ${1.5+Math.random()*2}s;
+    --delay: ${Math.random()*3}s;
+  `;
+  sl.appendChild(line);
+}
+
+// ── EXHAUST PARTICLES ──
+const exhaust = document.getElementById('exhaust');
+for(let i = 0; i < 8; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const sx = (Math.random()-0.5)*20;
+  p.style.cssText = `
+    left: ${20+Math.random()*20}px;
+    --sx: ${sx}px;
+    --ex: ${sx+(Math.random()-0.5)*30}px;
+    --dur: ${0.6+Math.random()*0.8}s;
+    --delay: ${Math.random()*0.8}s;
+  `;
+  exhaust.appendChild(p);
+}
+
+// ── ROCKET TAKEOFF ──
+setTimeout(() => {
+  const rw = document.getElementById('rocketWrap');
+  rw.style.transition = 'transform 3s cubic-bezier(0.4, 0, 0.2, 1)';
+  rw.style.transform = 'translateY(-380px) scale(0.7)';
+  setTimeout(() => {
+    rw.style.transition = 'transform 0.5s ease';
+    rw.style.transform = '';
+    rw.style.animation = 'rocketFloat 4s ease-in-out infinite';
+  }, 3500);
+}, 3000);
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── WHATSAPP SEND ──
+function sendWhatsApp() {
+  const name = document.getElementById('name').value || 'Unknown';
+  const service = document.getElementById('service').value || 'Not selected';
+  const details = document.getElementById('details').value || '';
+  const msg = `Hello NEX STUDIO!%0A%0AName: ${name}%0AService: ${service}%0A%0ADetails: ${details}`;
+  window.open(`https://wa.me/qr/YKD6TEQVK4MYN1?text=${msg}`);
+}
+
+function openAI() {
+  window.open('https://wa.me/qr/YKD6TEQVK4MYN1');
+}
+
+// ── SNAKE GAME ──
+const c = document.getElementById('game');
+const ctx = c.getContext('2d');
+const SIZE = 16, COLS = 20, ROWS = 20;
+let snake = [{x:10,y:10}], food = {x:5,y:5}, dx=1, dy=0, score=0;
+
+function randFood() {
+  food = {x:Math.floor(Math.random()*COLS), y:Math.floor(Math.random()*ROWS)};
+}
+
+function drawGame() {
+  ctx.fillStyle = '#060610';
+  ctx.fillRect(0,0,320,320);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(200,240,255,0.03)';
+  for(let i=0;i<COLS;i++){
+    ctx.beginPath();ctx.moveTo(i*SIZE,0);ctx.lineTo(i*SIZE,320);ctx.stroke();
+  }
+  for(let i=0;i<ROWS;i++){
+    ctx.beginPath();ctx.moveTo(0,i*SIZE);ctx.lineTo(320,i*SIZE);ctx.stroke();
+  }
+
+  // Food
+  ctx.fillStyle = '#c8f0ff';
+  ctx.shadowColor = '#c8f0ff';
+  ctx.shadowBlur = 10;
+  ctx.fillRect(food.x*SIZE+2, food.y*SIZE+2, SIZE-4, SIZE-4);
+  ctx.shadowBlur = 0;
+
+  // Snake
+  snake.forEach((seg, i) => {
+    const alpha = 0.4 + 0.6*(i===0?1:(snake.length-i)/snake.length);
+    ctx.fillStyle = i===0 ? '#ffffff' : `rgba(100,180,255,${alpha})`;
+    ctx.fillRect(seg.x*SIZE+1, seg.y*SIZE+1, SIZE-2, SIZE-2);
+  });
+
+  // Score
+  ctx.fillStyle = 'rgba(200,240,255,0.5)';
+  ctx.font = '12px Syne, sans-serif';
+  ctx.fillText(`SCORE: ${score}`, 10, 315);
+
+  // Move
+  const head = {x: (snake[0].x+dx+COLS)%COLS, y: (snake[0].y+dy+ROWS)%ROWS};
+  if(snake.some(s=>s.x===head.x&&s.y===head.y)){
+    snake=[{x:10,y:10}]; dx=1; dy=0; score=0; return;
+  }
+  snake.unshift(head);
+  if(head.x===food.x&&head.y===food.y){ score++; randFood(); }
+  else snake.pop();
+}
+
+setInterval(drawGame, 120);
+
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowUp'&&dy===0){dx=0;dy=-1;}
+  if(e.key==='ArrowDown'&&dy===0){dx=0;dy=1;}
+  if(e.key==='ArrowLeft'&&dx===0){dx=-1;dy=0;}
+  if(e.key==='ArrowRight'&&dx===0){dx=1;dy=0;}
+});
+</script>
+</body>
+</html>
